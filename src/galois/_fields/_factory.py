@@ -402,7 +402,7 @@ def _GF_prime(
     setattr(sys.modules[__name__], name, field)
 
     # Since this is a new class, compile the ufuncs and set the element representation
-    field.compile("auto" if compile is None else compile)
+    field.compile("auto" if compile is None else compile)  # 这一句是用来造表的
     field.repr("int" if repr is None else repr)
 
     field._is_primitive_poly = field._irreducible_poly(field._primitive_element, field=field) == 0
