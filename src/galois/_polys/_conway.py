@@ -292,7 +292,7 @@ def conway_poly(characteristic: int, degree: int, search: bool = False) -> Poly:
         )
 
     try:
-        return _conway_poly_database(characteristic, degree)
+        return _conway_poly_database(characteristic, degree)  # 这一步主要是为了提供一个多项式从而生成一个扩域
     except LookupError as e:
         if search:
             return _conway_poly_search(characteristic, degree)

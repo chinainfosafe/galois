@@ -354,6 +354,7 @@ class multiply_vector(_lookup.multiply_ufunc):
 
     @staticmethod
     def calculate(a: int, b: int) -> int:
+        # 扩域上元素乘法造表时所用到的具体函数
         a_vec = INT_TO_VECTOR(a, CHARACTERISTIC, DEGREE)
         b_vec = INT_TO_VECTOR(b, CHARACTERISTIC, DEGREE)
 
@@ -361,14 +362,16 @@ class multiply_vector(_lookup.multiply_ufunc):
         irreducible_poly_vec = INT_TO_VECTOR(IRREDUCIBLE_POLY - CHARACTERISTIC**DEGREE, CHARACTERISTIC, DEGREE)
 
         c_vec = np.zeros(DEGREE, dtype=DTYPE)
-        for _ in range(DEGREE):
-            if b_vec[-1] > 0:
+        for _ in range(DEGREE):  # 因为多项式最高为DEGREE次，所以要尝试DEGREE次
+            # 分为两部分，一部分对x进行乘法，另一部分则是针对系数之间的乘法
+            # 比如 (x+1) * 2x = ((x+1)*x)*2
+            if b_vec[-1] > 0:  # 对多项式系数进行约简
                 c_vec = (c_vec + b_vec[-1] * a_vec) % CHARACTERISTIC
 
             # Multiply a(x) by x
             q = a_vec[0]
-            a_vec[:-1] = a_vec[1:]
-            a_vec[-1] = 0
+            a_vec[:-1] = a_vec[1:]  # 对多项式进行左移相当于*x
+            a_vec[-1] = 0  # 低位补零
 
             # Reduce a(x) modulo the irreducible polynomial
             if q > 0:
@@ -376,7 +379,7 @@ class multiply_vector(_lookup.multiply_ufunc):
 
             # Divide b(x) by x
             b_vec[1:] = b_vec[:-1]
-            b_vec[0] = 0
+            b_vec[0] = 0  # 高位补零
 
         c = VECTOR_TO_INT(c_vec, CHARACTERISTIC, DEGREE)
 

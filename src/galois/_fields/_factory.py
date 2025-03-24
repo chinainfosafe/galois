@@ -435,7 +435,7 @@ def _GF_extension(
 
     # Get default irreducible polynomial
     if irreducible_poly_ is None:
-        irreducible_poly_ = conway_poly(p, m)
+        irreducible_poly_ = conway_poly(p, m)  # 返回扩域所需多项式
         is_primitive_poly = True
         verify_poly = False  # We don't need to verify Conway polynomials are irreducible
         if alpha is None:
