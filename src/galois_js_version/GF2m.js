@@ -436,10 +436,10 @@ function reduce(a) {
     b = calc.r.number.val;
     m = b.length;
     if (!m) return (c);
-    while (n >= m) {
-        for (i = 0, j = n - m; i < m; c[j++] ^= b[i++]);
-        while (n-- && !c[n]);
-        ++n;
+    while (n >= m) {//3 循环往复得到最终的余多项式, 当余多项式的长度小于除多项式的长度时，结束
+        for (i = 0, j = n - m; i < m; c[j++] ^= b[i++]);// 0 移位 并且减去 除多项式
+        while (n-- && !c[n]); // 1 得到中间余多项式的首个非零元素下标
+        ++n; //2 确定中间余多项式的长度(即非零元素下标+1)
     }
     c.length = n;
     return (c);
