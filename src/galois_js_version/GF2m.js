@@ -478,8 +478,10 @@ function sqr(a) {
 
     n = a.length;
     if (!n) return (new Array(0));
+    // 最高次幂是(n-1),平方之后的最高次幂是2(n-1),加上最低位的0次幂，长度则为2n-1
     b = new Array(n + n - 1);
     b[0] = a[0];
+    //交叉项相乘之后为0，相同次数项做平方。
     for (i = j = 1; i < n; b[j++] = 0, b[j++] = a[i++]);
     return (b);
 }
@@ -565,6 +567,13 @@ function sqrt(a) {
 
     c = reduce(a);
     n = calc.r.number.val.length - 2;
+    /**
+     * 2元扩域上的平方根运算规则 即 y^2 = a,知 a 求 y
+     *      已知 a^{2^{m}-1} = 1, 则a^{2^{m}-1}*a = 1*a = a;
+     *      有 a^{2^{m}}= y^{2}
+     *      有 y = (a)^{1/2} = (a^{2^{m}})^{1/2} = y^{2^{m-1}}
+     *      其中 m 为2元域的扩张次数
+     */
     for (i = 0; i < n; i++) c = sqrreduce(c);
     return (c);
 }
