@@ -523,21 +523,50 @@ function onmul() {
     numberval(mul(a, b)).push();
     savestate();
 }
+/**
+ * a^{2^{m}-1} = 1 a*a^{2^{m}-2} * a = 1, so a^{2^{m}-2} is the inverse of a
+ **/
 function inv(a) {
     var c, d, b, n, i;
 
-    c = reduce(a);
-    n = calc.r.number.val.length - 2;
+    c = reduce(a); // reduce the polynomial a with the reduction polynomial
+    n = calc.r.number.val.length - 2; // n = m-1
     if (n <= 0) return (c);
+    // get the index(from 0 up) of the highest 1, for example 0b1000, the index is 3
     for (b = 0; n >> b != 1; b++);
+    /**
+     * Description:
+     *      the under loop is to computer a^{2^{m}-2}^{1/2}, which is a^{2^{m-1}-1}
+     *      in the below code is a^{2^{n}-1}.
+     * b is the index of length of (n = m-1)'s binary representation
+     * For example:
+     *      n = 10, b = 3, m = 11
+     *      the exponent of n is 0b1111 1111
+     * in the first loop b=3, exponent it compute is 0b11, d = a<<1 (a^{0b10}), c = d*a= a^{0b10+0b1}= a^{0b11} 
+     *      because m' = len(0b11) = 2 can be get with n>>2, so no need to use `c = mulreduce(a, sqrreduce(c))`
+     * in the second loop b=2, exponent it compute is 0b11_111(a^{2^{5}-1})
+     *      in the first loop we know c=a^{0b11}, d = c, now we can get a^{0b11_111} from d
+     *      d = d<<2 = c<<2 = a^{0b11}<<2 = a^{0b1100}
+     *      then a^{0b1111} = d*c = a^{0b1100+0b11}, which update c = a^{0b1111}
+     *      because what we want to comput is a^{0b11_111}, m' = 5(can be get with n >>1), an odd number
+     *      how to get a^{0b11_111} from a^{0b1111}?
+     *      it's easy, we just left shift a^{0b1111}, we get a^{0b11110}, then multiply with a^{0b1}, we get a^{0b11111}
+     *      which can be implemented by `c = mulreduce(a, sqrreduce(c))`
+     * in the third loop , b=1, exponent it compute is 0b11111_11111(a^{2^{10}-1})
+     *      in the second loop we know c=a^{0b11111} d=c, now we can get a^{0b11111_11111} from d
+     *      d = d<<5 = a^{0b11111_00000}, c = d *c = a^{0b1111100000+0b11111} =a^{0b1111111111}
+     * after the above loop, b became 0, finish the loop.
+     */
     while (b) {
-        d = c.slice();
-        for (i = n >> b; i--; d = sqrreduce(d));
+        d = c.slice(); // copy the polynomial c to d
+        for (i = n >> b; i--; d = sqrreduce(d)); // d = d^{2^{n>>b}}
         c = mulreduce(c, d);
+
+        // judge the sub length of m is even or odd
         if (n >> --b & 1)
             c = mulreduce(a, sqrreduce(c));
     }
-    return (sqrreduce(c));
+    return (sqrreduce(c)); // {a^{2^{m}-2}^{1/2}}^2 = a^{2^{m}-2}, we get a^{2^{m}-2} = a^2046.
 }
 function oninv() {
     var a;
