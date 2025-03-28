@@ -1,7 +1,9 @@
 import galois
 
-GF = galois.GF(3, 5)
-print(GF.ufunc_mode)
-a = GF.Random(10_000_000, seed=1, dtype=int)
-b = GF.Random(10_000_000, seed=2, dtype=int)
-c = a * b
+GF2 = galois.GF(2)
+f_poly = galois.Poly([1, 0, 0, 1, 1], field=GF2)
+p_poly = galois.Poly([1, 0, 0, 0, 0], field=GF2)
+_, p_inv_poly, _ = galois.egcd(p_poly, f_poly)
+print(p_inv_poly)
+# q = f_poly // p_poly
+# print(q)

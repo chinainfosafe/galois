@@ -57,6 +57,7 @@ def divmod(a: int, b: int) -> tuple[int, int]:
 
     q = 0
     mask = 1 << deg_a
+    # implement division by subtract polynomial b(x) bit by bit, whether can be optimized?
     for i in range(deg_q, -1, -1):
         q <<= 1
         if a & mask:
